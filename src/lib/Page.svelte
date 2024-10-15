@@ -163,7 +163,7 @@
     }
     .sidebar {
         width: 34%;
-        margin: 3% 6% 4% 4%;
+        margin: 30px 6% 4% 4%;
         min-width: 400px;
         position: relative;
         padding-bottom: 100px;

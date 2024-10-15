@@ -27,7 +27,7 @@
   .tag {
     font-size: 16px;
     margin-top: 4px;
-    font-weight: 200;
+    font-weight: 300;
   }
   .icon {
     margin-bottom: 4px;

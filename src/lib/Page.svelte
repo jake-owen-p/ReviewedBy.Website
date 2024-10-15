@@ -52,7 +52,10 @@
 
 <main class="container" >
     <div class="sidebar">
-        <p class="text title">ReviewedBy</p>
+        <div class="logo_container">
+            <img class="logo" src="/logo.svg" alt="img" />
+            <p class="text title">ReviewedBy</p>
+        </div>
         <div class="inner_container">
             <div style="overflow: auto">
                 <h1 class="text">{config.title}</h1>
@@ -81,7 +84,16 @@
 </main>
 
 <style>
+    .logo {
+        height: 20px;
+        width: 20px;
+    }
+    .logo_container {
+        display: flex;
+        align-items: center;
+    }
     .title {
+        margin-left: 5px;
         font-size: 18px;
         font-weight: 800;
     }
@@ -129,6 +141,7 @@
         height: 40px;
         padding: 0 30px;
         border-radius: 8px;
+        font-size: 16px;
     }
     h1 {
         font-size: 3.5em;

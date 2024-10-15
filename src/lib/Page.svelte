@@ -27,7 +27,7 @@
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    email: emailToSend
+                    email: emailToSend.toLowerCase()
                 })
             });
         } catch {

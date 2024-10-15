@@ -1,5 +1,6 @@
 export interface Config {
 	title: string;
+	heroImage: string;
 	record: {
 		title: string;
 		tag: string;

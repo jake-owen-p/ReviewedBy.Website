@@ -52,7 +52,7 @@
 
 <main class="container" >
     <div class="sidebar">
-        <p class="text">ReviewedBy</p>
+        <p class="text title">ReviewedBy</p>
         <div class="inner_container">
             <div style="overflow: auto">
                 <h1 class="text">{config.title}</h1>
@@ -75,12 +75,16 @@
         </div>
     </div>
     <div class="hero_image_container">
-        <img class="hero_image" src={'/people.png'} alt="coder">
+        <img class="hero_image" src={config.heroImage} alt="coder">
         <img class="lines" src={'/lines.svg'} alt="lines" />
     </div>
 </main>
 
 <style>
+    .title {
+        font-size: 18px;
+        font-weight: 800;
+    }
     .text_container {
         height: 60px;
         display: flex;

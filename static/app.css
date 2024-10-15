@@ -1,0 +1,23 @@
+:root {
+    font-family: Roboto, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-weight: 400;
+
+    color-scheme: light dark;
+    --primary: #F6FFFB;
+    --secondary: #2F4858;
+    --secondary-rgb: rgb(47, 72, 88);
+    /*--primary: #352F44;*/
+    /*--secondary: #FAF0E6;*/
+    color: var(--secondary);
+    background-color: var(--primary);
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+}
+
+p {
+    margin: 0;
+}

@@ -24,9 +24,12 @@ export default tseslint.config(
 			parserOptions: {
 				parser: tseslint.parser
 			}
+		},
+		rules: {
+			"@typescript-eslint/no-explicit-any": "off"
 		}
 	},
 	{
 		ignores: ['build/', '.svelte-kit/', 'dist/']
-	}
+	},
 );

@@ -101,12 +101,17 @@
 		videoElement.play();
 
 		// Initialize MediaRecorder with correct MIME type
-		let options = { mimeType: 'video/webm; codecs=vp8,opus' };
+		let options = null;
 
-		if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-			options = { mimeType: 'video/webm' };
+		if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
+			options = { mimeType: 'video/webm; codecs=vp9' };
+		} else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) {
+			options = { mimeType: 'video/webm; codecs=vp8' };
+		} else if (MediaRecorder.isTypeSupported('video/mp4')) {
+			options = { mimeType: 'video/mp4' };
+		} else {
+			options = {}; // Let the browser decide
 		}
-
 		try {
 			mediaRecorder = new MediaRecorder(stream, options);
 		} catch (e) {
@@ -297,6 +302,7 @@
     }
     .container {
 				height: 100vh;
+				padding-bottom: 30px;
 		}
     .logo {
         height: 20px;

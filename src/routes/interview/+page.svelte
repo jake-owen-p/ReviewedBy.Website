@@ -103,15 +103,15 @@
 		// Initialize MediaRecorder with correct MIME type
 		let options = null;
 
-		if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
-			options = { mimeType: 'video/webm; codecs=vp9' };
-		} else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) {
-			options = { mimeType: 'video/webm; codecs=vp8' };
-		} else if (MediaRecorder.isTypeSupported('video/mp4')) {
-			options = { mimeType: 'video/mp4' };
+
+		if (MediaRecorder.isTypeSupported('video/mp4;codecs=h264')) {
+			options = { mimeType: 'video/mp4; codecs=h264' };
+		} else if (MediaRecorder.isTypeSupported('video/quicktime')) {
+			options = { mimeType: 'video/quicktime' };
 		} else {
-			options = {}; // Let the browser decide
+			options = { mimeType: 'video/webm; codecs=vp8,opus' };
 		}
+
 		try {
 			mediaRecorder = new MediaRecorder(stream, options);
 		} catch (e) {

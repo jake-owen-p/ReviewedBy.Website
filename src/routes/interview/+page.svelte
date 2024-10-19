@@ -269,6 +269,9 @@
     .question {
         padding-bottom: 20px;
 				font-size: 18px;
+				display: flex;
+				flex-direction: column;
+				gap: 10px;
     }
 		.inner_container {
 				height: 65%;

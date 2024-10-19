@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import RecordingButtons from '$lib/RecordingButtons.svelte';
+	import RecordingComplete from '$lib/RecordingComplete.svelte';
 
 	let mediaRecorder: MediaRecorder;
 	let recordedChunks: Blob[] = [];
@@ -209,7 +211,15 @@
 
 		<!-- Single video element for preview and playback -->
 		<!-- svelte-ignore a11y-media-has-caption -->
-		<video class="video" bind:this={videoElement} autoplay playsinline controls={!stream}></video>
+<!--		<video class="video" bind:this={videoElement} autoplay playsinline controls={!stream}></video>-->
+		<div class="video_container">
+			<video class="video" bind:this={videoElement} autoplay playsinline controls={!stream}></video>
+			<div class="video_modal">
+<!--				<RecordingButtons onPress={recording ? stopRecording : startRecording} isRecording={recording} />-->
+				<RecordingComplete />
+			</div>
+		</div>
+
 
 		<div>
 			{#if !recording}
@@ -226,18 +236,37 @@
 </main>
 
 <style>
+    .video_container {
+        position: relative;
+        width:90%;
+        height: 100%;
+        margin-left: 5%;
+        border-radius: 20px;
+        object-fit: cover;
+    }
+    .video_modal {
+        background-color: white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+				min-width: 300px;
+        transform: translate(-50%, -50%); /* This centers the modal */
+        z-index: 10; /* Ensures it's above other elements */
+				border-radius: 12px;
+    }
 		.question p {
         font-weight: bold;
 				text-align: center;
 		}
     .question {
         padding-bottom: 20px;
+				font-size: 18px;
     }
 		.inner_container {
 				height: 65%;
 		}
 		.video {
-				width:90%;
+				width: 90%;
 				height: 100%;
 				margin-left: 5%;
 				border-radius: 20px;

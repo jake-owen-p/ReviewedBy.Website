@@ -18,6 +18,7 @@
 	let selectedVideoDeviceId: string;
 	let audioDeviceLabel: string = '';
 	let videoDeviceLabel: string = '';
+	let isPlaying = false;
 
 	// Get user media and devices on component mount
 	onMount(async () => {
@@ -138,6 +139,7 @@
 
 	function playRecording() {
 		// Stop the webcam stream
+
 		if (stream) {
 			stream.getTracks().forEach((track) => track.stop());
 			stream = null;
@@ -146,8 +148,18 @@
 		videoElement.src = videoUrl;
 		videoElement.muted = false; // Unmute during playback
 		videoElement.play();
-
+		isPlaying = true
 	}
+
+	$: videoElement && videoElement.addEventListener('play', () => {
+		if (videoElement.srcObject === null) {
+			isPlaying = true;
+		}
+	});
+
+	$: videoElement && videoElement.addEventListener('pause', () => {
+		isPlaying = false;
+	});
 
 	async function requestPermissions() {
 		try {
@@ -215,21 +227,22 @@
 		<div class="video_container">
 			<video class="video" bind:this={videoElement} autoplay playsinline controls={!stream}></video>
 			<div class="video_modal">
-<!--				<RecordingButtons onPress={recording ? stopRecording : startRecording} isRecording={recording} />-->
-				<RecordingComplete />
+
+				{#if !isPlaying}
+				{#if (recording || !mediaRecorder)}
+					<RecordingButtons onPress={recording ? stopRecording : startRecording} isRecording={recording} />
+					{:else}
+					<RecordingComplete
+						playRecording={playRecording}
+						startRecording={() => {mediaRecorder = undefined}}
+					/>
+					{/if}
+				{/if}
 			</div>
 		</div>
 
 
-		<div>
-			{#if !recording}
-				<button on:click={startRecording}>Start Recording</button>
-			{:else}
-				<button on:click={stopRecording}>Stop Recording</button>
-			{/if}
-		</div>
-
-		<button on:click={playRecording}>Play Recording</button>
+<!--		<button on:click={requestPermissions}>Request Microphone and Camera Access</button>-->
 <!--		<button on:click={requestPermissions}>Request Microphone and Camera Access</button>-->
 
 	</div>
@@ -249,7 +262,7 @@
         position: absolute;
         top: 50%;
         left: 50%;
-				min-width: 300px;
+				min-width: 280px;
         transform: translate(-50%, -50%); /* This centers the modal */
         z-index: 10; /* Ensures it's above other elements */
 				border-radius: 12px;

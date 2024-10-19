@@ -1,4 +1,6 @@
 <script>
+	export let startRecording;
+	export let playRecording;
 </script>
 
 <div class="container">
@@ -10,12 +12,12 @@
 	<div class="buttons">
 		<div class="h_seperator" />
 		<div class="restart_buttons">
-			<div class="button_container">
+			<div class="button_container" on:click={playRecording}>
 				<img src="/play.svg" alt="play" />
 				<p>Play</p>
 			</div>
 			<div class="v_seperator" />
-			<div class="button_container">
+			<div class="button_container" on:click={startRecording}>
 				<img src="/restart.svg" alt="restart" />
 				<p>Start Again</p>
 			</div>

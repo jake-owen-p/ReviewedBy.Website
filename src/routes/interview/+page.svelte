@@ -20,6 +20,14 @@
 	let videoDeviceLabel: string = '';
 	let isPlaying = false;
 
+	let options = {}; // Initialize options at the top to access in other functions
+	let mimeType = ''; // Store the actual MIME type used
+
+	// Function to detect iOS devices
+	function isIOS() {
+		return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+	}
+
 	// Get user media and devices on component mount
 	onMount(async () => {
 		try {
@@ -101,18 +109,24 @@
 		videoElement.play();
 
 		// Initialize MediaRecorder with correct MIME type
-		let options = null;
+		options = null;
+		mimeType = '';
 
-		if (MediaRecorder.isTypeSupported('video/mp4;codecs=avc1')) {
-			options = { mimeType: 'video/mp4; codecs=avc1' };
+		if (MediaRecorder.isTypeSupported('video/mp4;codecs="avc1.42E01E, mp4a.40.2"')) {
+			options = { mimeType: 'video/mp4;codecs="avc1.42E01E, mp4a.40.2"' };
+			mimeType = 'video/mp4';
 		} else if (MediaRecorder.isTypeSupported('video/mp4')) {
 			options = { mimeType: 'video/mp4' };
+			mimeType = 'video/mp4';
 		} else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
 			options = { mimeType: 'video/webm; codecs=vp9' };
+			mimeType = 'video/webm; codecs=vp9';
 		} else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) {
 			options = { mimeType: 'video/webm; codecs=vp8' };
+			mimeType = 'video/webm; codecs=vp8';
 		} else {
 			options = {}; // Let the browser decide
+			mimeType = '';
 		}
 
 		try {
@@ -135,7 +149,7 @@
 	}
 
 	function handleStop() {
-		const blob = new Blob(recordedChunks, { type: 'video/webm' });
+		const blob = new Blob(recordedChunks, { type: mimeType || 'video/webm' });
 		videoUrl = URL.createObjectURL(blob);
 	}
 
@@ -147,7 +161,6 @@
 
 	function playRecording() {
 		// Stop the webcam stream
-
 		if (stream) {
 			stream.getTracks().forEach((track) => track.stop());
 			stream = null;
@@ -156,7 +169,7 @@
 		videoElement.src = videoUrl;
 		videoElement.muted = false; // Unmute during playback
 		videoElement.play();
-		isPlaying = true
+		isPlaying = true;
 	}
 
 	$: videoElement && videoElement.addEventListener('play', () => {
@@ -202,57 +215,31 @@
 			<p>You have 2 minutes</p>
 		</div>
 
-		<!-- Device Selection -->
-<!--		<div class="device-selection">-->
-<!--			<label for="audio-select">Select Audio Device:</label>-->
-<!--			<select id="audio-select" on:change={handleAudioDeviceChange}>-->
-<!--				{#each audioDevices as device}-->
-<!--					<option value={device.deviceId} selected={device.deviceId === selectedAudioDeviceId}>-->
-<!--						{device.label || 'Microphone'}-->
-<!--					</option>-->
-<!--				{/each}-->
-<!--			</select>-->
-
-<!--			<label for="video-select">Select Video Device:</label>-->
-<!--			<select id="video-select" on:change={handleVideoDeviceChange}>-->
-<!--				{#each videoDevices as device}-->
-<!--					<option value={device.deviceId} selected={device.deviceId === selectedVideoDeviceId}>-->
-<!--						{device.label || 'Camera'}-->
-<!--					</option>-->
-<!--				{/each}-->
-<!--			</select>-->
-<!--		</div>-->
-
-<!--		&lt;!&ndash; Display Selected Devices &ndash;&gt;-->
-<!--		<div class="device-info">-->
-<!--			<p>Audio Device: {audioDeviceLabel}</p>-->
-<!--			<p>Video Device: {videoDeviceLabel}</p>-->
-<!--		</div>-->
-
 		<!-- Single video element for preview and playback -->
 		<!-- svelte-ignore a11y-media-has-caption -->
-<!--		<video class="video" bind:this={videoElement} autoplay playsinline controls={!stream}></video>-->
 		<div class="video_container">
-			<video class="video" bind:this={videoElement} autoplay playsinline controls={!stream}></video>
+			<video
+				class="video"
+				bind:this={videoElement}
+				autoplay
+				playsinline
+				webkit-playsinline
+				controls={!stream}
+				muted
+			></video>
 			<div class="video_modal">
-
 				{#if !isPlaying}
-				{#if (recording || !mediaRecorder)}
-					<RecordingButtons onPress={recording ? stopRecording : startRecording} isRecording={recording} />
+					{#if (recording || !mediaRecorder)}
+						<RecordingButtons onPress={recording ? stopRecording : startRecording} isRecording={recording} />
 					{:else}
-					<RecordingComplete
-						playRecording={playRecording}
-						startRecording={() => {mediaRecorder = undefined}}
-					/>
+						<RecordingComplete
+							playRecording={playRecording}
+							startRecording={() => { mediaRecorder = undefined }}
+						/>
 					{/if}
 				{/if}
 			</div>
 		</div>
-
-
-<!--		<button on:click={requestPermissions}>Request Microphone and Camera Access</button>-->
-<!--		<button on:click={requestPermissions}>Request Microphone and Camera Access</button>-->
-
 	</div>
 </main>
 

@@ -17,19 +17,19 @@ export const engineerSetup = {
 }
 
 export const gradsSetup = {
-    title: "Free Interview Feedback Designed to Land Your Dream Job",
+    title: "Free Interview Feedback Personalised for Your Career",
     heroImage: "/startup.jpg",
     basePath: "grads",
     record: {
         title: "Record a 2-min Interview",
-        tag: "Answer a short question tailored to graduates"
+        tag: "Answer a short question tailored to assess core skills."
     },
     feedback: {
         title: "Get Personalised Feedback",
-        tag: "Receive professional guidance to help improve your technique"
+        tag: "Receive professional guidance to help improve your delivery, content & technique."
     },
     job: {
         title: "Prepare for Success",
-        tag: "Implement your recommendations to ace your next interview"
+        tag: "Walk confidently into your next interviewed with your personalised recommendations."
     }
 }

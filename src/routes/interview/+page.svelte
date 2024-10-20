@@ -296,6 +296,8 @@
 			// Step 1: Get the pre-signed URL from your API
 			const response = await fetch('https://reviewedbyapi-production.up.railway.app/interview', {
 				method: 'POST',
+			}).catch(err => {
+				throw new Error("INTER ERROR")
 			});
 
 			if (!response.ok) {
@@ -307,17 +309,16 @@
 			const presignedUrl = data.url;
 
 			// Step 2: Upload the blob to S3 using the pre-signed URL
-			const uploadResponse = await fetch(presignedUrl, {
-				method: 'PUT',
-				body: blob,
-				headers: {
-					'Content-Type': mimeType || 'video/webm',
-				},
-			});
-
-			if (!uploadResponse.ok) {
-				const errorText = await uploadResponse.text();
-				throw new Error(`Error uploading video: ${uploadResponse.status} ${errorText}`);
+			try {
+				await fetch(presignedUrl, {
+					method: 'PUT',
+					body: blob,
+					headers: {
+						'Content-Type': mimeType || 'video/webm',
+					},
+				});
+			} catch {
+				throw new Error(`Error uploading video: s333`);
 			}
 
 			savingVideoState = 'saved';
@@ -333,7 +334,7 @@
 	<div class="header">
 		<div class="logo_container">
 			<img class="logo" src="/logo.svg" alt="img" />
-			<p class="text title" on:click={saveVideo}>ReviewedBy</p>
+			<p class="text title">ReviewedBy</p>
 		</div>
 		<h1 class="text hero_title">Submit Your 2 Minute Interview for Feedback</h1>
 	</div>

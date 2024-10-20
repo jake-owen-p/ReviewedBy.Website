@@ -21,7 +21,7 @@
         isLoading = true;
         try {
             // await fetch("https://reviewedbyapi-production.up.railway.app/email", {
-            await fetch("http://localhost:8080/email", {
+            await fetch("https://reviewedbyapi-production.up.railway.app/email", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

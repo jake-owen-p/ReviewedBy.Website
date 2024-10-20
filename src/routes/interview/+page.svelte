@@ -292,7 +292,7 @@
 	const saveVideo = async () => {
 		savingVideoState = 'saving';
 		try {
-			const response = await fetch('http://localhost:8080/interview', {
+			const response = await fetch('https://reviewedbyapi-production.up.railway.app/interview', {
 				method: 'POST',
 			});
 			const data = await response.json();

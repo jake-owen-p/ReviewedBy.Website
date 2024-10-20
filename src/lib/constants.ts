@@ -29,7 +29,7 @@ export const gradsSetup = {
         tag: "Receive professional guidance to help improve your delivery, content & technique."
     },
     job: {
-        title: "Prepare for Success",
+        title: "Land your Dream Job",
         tag: "Walk confidently into your next interviewed with your personalised recommendations."
     }
 }

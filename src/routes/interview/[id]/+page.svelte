@@ -295,7 +295,7 @@
 		savingVideoState = 'saving';
 		try {
 			// Step 1: Get the pre-signed URL from your API
-			const response = await fetch('http://localhost:8080/interview', {
+			const response = await fetch('https://reviewedbyapi-production.up.railway.app/interview', {
 				method: 'POST',
 			}).catch(err => {
 				throw new Error("INTER ERROR")
@@ -332,7 +332,7 @@
 	};
 
 	const sendSuccessEmail = async (email: string) => {
-		await fetch("http://localhost:8080/email/success", {
+		await fetch("https://reviewedbyapi-production.up.railway.app/email/success", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"

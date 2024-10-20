@@ -67,7 +67,7 @@
                     {:else if isLoading}
                         <img class="spinner" src={`${config.basePath}/spinner.svg`} alt="spinner" />
                     {:else }
-                        <button on:click={() => sendEmail(email)} class="button">Get me a Job</button>
+                        <button on:click={() => sendEmail(email)} class="button">Get My Review</button>
                     {/if}
                 </div>
                 <div class="line" />

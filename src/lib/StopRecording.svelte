@@ -29,7 +29,7 @@
 			cursor: pointer;
 	}
 	.time_container {
-			color: var(--secondary);
+			color: var(--primary);
 			font-weight: bold;
 			font-size: 20px;
 	}

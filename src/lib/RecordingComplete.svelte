@@ -61,11 +61,11 @@
 		.h_seperator {
 				width: 100%;
 				height: 1px;
-				background-color: var(--secondary);
+				background-color: var(--primary);
 		}
 		.v_seperator {
 				width: 1px;
-        background-color: var(--secondary);
+        background-color: var(--primary);
 		}
 		.restart_buttons {
 				display: flex;
@@ -85,7 +85,7 @@
 				margin-bottom: 20px;
     }
     .button {
-        background-color: var(--secondary);
+        background-color: var(--primary);
 				color: white;
 				font-weight: bold;
 				padding: 7px 20px;

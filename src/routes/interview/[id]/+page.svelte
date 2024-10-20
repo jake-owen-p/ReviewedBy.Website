@@ -417,6 +417,7 @@
         margin-left: 5%;
         border-radius: 20px;
         object-fit: cover;
+				color: var(--primary);
     }
 		.question p {
         font-weight: bold;
@@ -467,7 +468,7 @@
         font-weight: 800;
     }
     .text {
-        color: var(--secondary);
+        color: var(--primary);
     }
     .device-selection {
         margin-bottom: 15px;

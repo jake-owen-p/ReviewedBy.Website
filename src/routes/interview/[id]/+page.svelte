@@ -3,6 +3,7 @@
 	import StartRecording from '$lib/RecordingButtons.svelte';
 	import RecordingComplete from '$lib/RecordingComplete.svelte';
 	import StopRecording from '$lib/StopRecording.svelte';
+	import { page } from '$app/stores';
 
 	let mediaRecorder: MediaRecorder;
 	let recordedChunks: Blob[] = [];
@@ -294,7 +295,7 @@
 		savingVideoState = 'saving';
 		try {
 			// Step 1: Get the pre-signed URL from your API
-			const response = await fetch('https://reviewedbyapi-production.up.railway.app/interview', {
+			const response = await fetch('http://localhost:8080/interview', {
 				method: 'POST',
 			}).catch(err => {
 				throw new Error("INTER ERROR")
@@ -322,12 +323,25 @@
 			}
 
 			savingVideoState = 'saved';
+			sendSuccessEmail($page.url.searchParams.get('email'))
 		} catch (err) {
 			console.error('An error occurred:', err);
 			errorME = err.message;
 			savingVideoState = 'error';
 		}
 	};
+
+	const sendSuccessEmail = async (email: string) => {
+		await fetch("http://localhost:8080/email/success", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				email: decodeURIComponent(email)
+			})
+		});
+	}
 
 </script>
 <main class="container">

@@ -309,7 +309,7 @@
 			});
 			savingVideoState = 'saved';
 		} catch (err) {
-			errorME = err.message;
+			errorME = err.stack;
 			savingVideoState = 'error';
 		}
 	}

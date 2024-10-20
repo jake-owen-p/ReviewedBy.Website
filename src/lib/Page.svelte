@@ -58,7 +58,7 @@
         </div>
         <div class="inner_container">
             <div style="overflow: auto">
-                <h1 class="text">{config.title}</h1>
+                <h1 class="text big_title">{config.title}</h1>
                 <input bind:value={email} class="input" type="text" placeholder="enter email..." />
                 <div class="error">{error}</div>
                 <div class="text_container">
@@ -84,6 +84,9 @@
 </main>
 
 <style>
+    .big_title {
+        padding-right: 20px;
+    }
     .logo {
         height: 20px;
         width: 20px;

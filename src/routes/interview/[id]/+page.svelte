@@ -4,6 +4,7 @@
 	import RecordingComplete from '$lib/RecordingComplete.svelte';
 	import StopRecording from '$lib/StopRecording.svelte';
 	import { page } from '$app/stores';
+	import { Questions } from '$lib/questions.js';
 
 	let mediaRecorder: MediaRecorder;
 	let recordedChunks: Blob[] = [];
@@ -19,8 +20,6 @@
 	let videoDevices: MediaDeviceInfo[] = [];
 	let selectedAudioDeviceId: string = '';
 	let selectedVideoDeviceId: string = '';
-	let audioDeviceLabel: string = '';
-	let videoDeviceLabel: string = '';
 	let isPlaying: boolean = false;
 
 	let options: MediaRecorderOptions = {}; // Initialize options at the top to access in other functions
@@ -31,12 +30,6 @@
 	let timerInterval: number | undefined;
 	let elapsedFormattedTime: string = "0:00";
 
-	// Function to detect iOS devices
-	function isIOS() {
-		return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-	}
-
-	// Get user media and devices on component mount
 	onMount(async () => {
 		try {
 			// Request permissions
@@ -50,12 +43,10 @@
 			// Set default devices
 			if (audioDevices.length > 0) {
 				selectedAudioDeviceId = audioDevices[0].deviceId;
-				audioDeviceLabel = audioDevices[0].label;
 			}
 
 			if (videoDevices.length > 0) {
 				selectedVideoDeviceId = videoDevices[0].deviceId;
-				videoDeviceLabel = videoDevices[0].label;
 			}
 
 			// Start the live preview
@@ -92,20 +83,6 @@
 		} catch (err) {
 			console.error('Error accessing media devices.', err);
 		}
-	}
-
-	function handleAudioDeviceChange(event: Event) {
-		const target = event.target as HTMLSelectElement;
-		selectedAudioDeviceId = target.value;
-		audioDeviceLabel = audioDevices.find((d) => d.deviceId === selectedAudioDeviceId)?.label || '';
-		startPreview();
-	}
-
-	function handleVideoDeviceChange(event: Event) {
-		const target = event.target as HTMLSelectElement;
-		selectedVideoDeviceId = target.value;
-		videoDeviceLabel = videoDevices.find((d) => d.deviceId === selectedVideoDeviceId)?.label || '';
-		startPreview();
 	}
 
 	async function startRecording() {
@@ -255,24 +232,6 @@
 		});
 	}
 
-	async function requestPermissions() {
-		try {
-			const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-			// Permissions granted, you can now use the stream
-			console.log('Microphone and camera permissions granted.');
-			// Do something with the stream if needed
-			stream.getTracks().forEach((track) => track.stop()); // Stop the tracks if not needed immediately
-		} catch (err) {
-			console.error('Error requesting media permissions:', err);
-			if (err.name === 'NotAllowedError') {
-				console.log('Permissions have been denied.');
-			} else if (err.name === 'NotFoundError') {
-				console.log('No media devices found.');
-			}
-			// Handle errors as needed
-		}
-	}
-
 	const startOver = () => {
 		mediaRecorder = undefined;
 		// Reset the video element to initial state if needed
@@ -289,44 +248,31 @@
 
 	}
 
-	let errorME = ''
-
 	const saveVideo = async () => {
 		savingVideoState = 'saving';
 		try {
 			// Step 1: Get the pre-signed URL from your API
 			const response = await fetch('https://reviewedbyapi-production.up.railway.app/interview', {
 				method: 'POST',
-			}).catch(err => {
-				throw new Error("INTER ERROR")
-			});
-
-			if (!response.ok) {
-				const errorText = await response.text();
-				throw new Error(`Error fetching pre-signed URL: ${response.status} ${errorText}`);
-			}
-
+			})
 			const data = await response.json();
 			const presignedUrl = data.url;
 
-			// Step 2: Upload the blob to S3 using the pre-signed URL
-			try {
-				await fetch(presignedUrl, {
-					method: 'PUT',
-					body: blob,
-					headers: {
-						'Content-Type': mimeType || 'video/webm',
-					},
-				});
-			} catch {
-				throw new Error(`Error uploading video: s333`);
-			}
+			await fetch(presignedUrl, {
+				method: 'PUT',
+				body: blob,
+				headers: {
+					'Content-Type': mimeType || 'video/webm',
+				},
+			});
 
 			savingVideoState = 'saved';
-			sendSuccessEmail($page.url.searchParams.get('email'))
+			const email = $page.url.searchParams.get('email');
+			if (email) {
+				sendSuccessEmail(email)
+			}
 		} catch (err) {
 			console.error('An error occurred:', err);
-			errorME = err.message;
 			savingVideoState = 'error';
 		}
 	};
@@ -341,32 +287,31 @@
 				email: decodeURIComponent(email)
 			})
 		});
-	}
 
+
+	}
+	const question = Questions[$page.url.searchParams.get('question') || "general"] || Questions["general"];
 </script>
 <main class="container">
 	<div class="header">
 		<div class="logo_container">
-			<img class="logo" src="/logo.svg" alt="img" />
+			<img class="logo" src="/grads/logo.svg" alt="img" />
 			<p class="text title">ReviewedBy</p>
 		</div>
 		<h1 class="text hero_title">Submit Your 2 Minute Interview for Feedback</h1>
 	</div>
 	<div class="inner_container">
 		<div class="question">
-			<p>What is your favourite feature from any programming language?</p>
+			<p>{question}</p>
 			<p>You have 2 minutes</p>
 		</div>
 
-		<!-- Single video element for preview and playback -->
-		<!-- svelte-ignore a11y-media-has-caption -->
 		<div class="video_container">
 			<video
 				class="video"
 				bind:this={videoElement}
 				autoplay
 				playsinline
-				webkit-playsinline
 				controls={!stream}
 				muted
 			></video>
@@ -428,6 +373,7 @@
 				font-size: 18px;
 				display: flex;
 				flex-direction: column;
+				color: var(--secondary_2);
 				gap: 10px;
     }
 		.inner_container {
@@ -453,6 +399,7 @@
     .container {
 				height: 100vh;
 				padding-bottom: 30px;
+				background-color: var(--primary_2);
 		}
     .logo {
         height: 20px;
@@ -468,18 +415,6 @@
         font-weight: 800;
     }
     .text {
-        color: var(--primary);
-    }
-    .device-selection {
-        margin-bottom: 15px;
-    }
-    .device-selection label {
-        margin-right: 5px;
-    }
-    .device-selection select {
-        margin-right: 15px;
-    }
-    .device-info {
-        margin-bottom: 15px;
+        color: var(--secondary_2);
     }
 </style>

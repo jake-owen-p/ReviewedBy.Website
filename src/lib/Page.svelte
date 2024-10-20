@@ -53,7 +53,7 @@
 <main class="container" >
     <div class="sidebar">
         <div class="logo_container">
-            <img class="logo" src="/logo-light.svg" alt="img" />
+            <img class="logo" src={config.basePath.includes('engineers') ? '/engineers/logo-light.svg' : '/grads/logo.svg'} alt="img" />
             <p class="text title">ReviewedBy</p>
         </div>
         <div class="inner_container">
@@ -65,21 +65,21 @@
                     {#if sent}
                         <div>You will receive an email within 5 minutes</div>
                     {:else if isLoading}
-                        <img class="spinner" src={'/spinner.svg'} alt="spinner" />
+                        <img class="spinner" src={`${config.basePath}/spinner.svg`} alt="spinner" />
                     {:else }
                         <button on:click={() => sendEmail(email)} class="button">Get me a Job</button>
                     {/if}
                 </div>
                 <div class="line" />
-                <Description title={config.record.title} tag={config.record.tag} icon={'/camera.svg'} />
-                <Description title={config.feedback.title} tag={config.feedback.tag} icon={'/form.svg'} />
-                <Description title={config.job.title} tag={config.job.tag} icon={'/heart.svg'} />
+                <Description title={config.record.title} tag={config.record.tag} icon={config.basePath + '/camera.svg'} />
+                <Description title={config.feedback.title} tag={config.feedback.tag} icon={config.basePath + '/form.svg'} />
+                <Description title={config.job.title} tag={config.job.tag} icon={config.basePath + '/heart.svg'} />
             </div>
         </div>
     </div>
     <div class="hero_image_container">
         <img class="hero_image" src={config.heroImage} alt="coder">
-        <img class="lines" src={'/lines.svg'} alt="lines" />
+        <img class="lines" src={config.basePath + '/lines.svg'} alt="lines" />
     </div>
 </main>
 

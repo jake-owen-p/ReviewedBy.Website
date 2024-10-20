@@ -1,6 +1,7 @@
 export interface Config {
 	title: string;
 	heroImage: string;
+	basePath: string;
 	record: {
 		title: string;
 		tag: string;

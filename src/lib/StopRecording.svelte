@@ -1,6 +1,6 @@
 <script>
-	export let elapsedTime = 4.62;
-	export let onClick = () => null;
+	export let elapsedTime;
+	export let onClick;
 </script>
 
 <div class="container">

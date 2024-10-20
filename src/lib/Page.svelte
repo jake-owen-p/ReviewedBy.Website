@@ -79,7 +79,7 @@
     </div>
     <div class="hero_image_container">
         <img class="hero_image" src={config.heroImage} alt="coder">
-        <img class="lines" src={config.basePath + '/lines.svg'} alt="lines" />
+<!--        <img class="lines" src={config.basePath + '/lines.svg'} alt="lines" />-->
     </div>
 </main>
 

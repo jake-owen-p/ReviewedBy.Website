@@ -53,7 +53,7 @@
 <main class="container" >
     <div class="sidebar">
         <div class="logo_container">
-            <img class="logo" src="/logo.svg" alt="img" />
+            <img class="logo" src="/logo-light.svg" alt="img" />
             <p class="text title">ReviewedBy</p>
         </div>
         <div class="inner_container">

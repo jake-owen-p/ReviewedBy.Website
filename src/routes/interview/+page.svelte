@@ -342,7 +342,6 @@
 		<div class="question">
 			<p>What is your favourite feature from any programming language?</p>
 			<p>You have 2 minutes</p>
-			<p>{errorME}</p>
 		</div>
 
 		<!-- Single video element for preview and playback -->

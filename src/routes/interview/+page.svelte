@@ -293,26 +293,40 @@
 	const saveVideo = async () => {
 		savingVideoState = 'saving';
 		try {
+			// Step 1: Get the pre-signed URL from your API
 			const response = await fetch('https://reviewedbyapi-production.up.railway.app/interview', {
 				method: 'POST',
 			});
+
+			if (!response.ok) {
+				const errorText = await response.text();
+				throw new Error(`Error fetching pre-signed URL: ${response.status} ${errorText}`);
+			}
+
 			const data = await response.json();
 			const presignedUrl = data.url;
 
 			// Step 2: Upload the blob to S3 using the pre-signed URL
-			await fetch(presignedUrl, {
+			const uploadResponse = await fetch(presignedUrl, {
 				method: 'PUT',
 				body: blob,
 				headers: {
 					'Content-Type': mimeType || 'video/webm',
 				},
 			});
+
+			if (!uploadResponse.ok) {
+				const errorText = await uploadResponse.text();
+				throw new Error(`Error uploading video: ${uploadResponse.status} ${errorText}`);
+			}
+
 			savingVideoState = 'saved';
 		} catch (err) {
-			errorME = JSON.stringify(err);
+			console.error('An error occurred:', err);
+			errorME = err.message;
 			savingVideoState = 'error';
 		}
-	}
+	};
 
 </script>
 <main class="container">

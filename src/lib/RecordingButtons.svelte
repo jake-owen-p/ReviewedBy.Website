@@ -1,15 +1,14 @@
 <script>
 	import RecordingButton from '$lib/RecordingButton.svelte';
 
-	export let isRecording = false;
 	export let onPress;
 </script>
 
 <div class="container">
-	<p class="text">{ isRecording ? 'Stop' : 'Start' } Recording</p>
+	<p class="text">{ 'Start' } Recording</p>
 
 	<button class="button" on:click={onPress}>
-		<RecordingButton isRecording={isRecording} />
+		<RecordingButton />
 	</button>
 </div>
 

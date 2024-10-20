@@ -1,10 +1,6 @@
-<script>
-	export let isRecording = false;
-</script>
-
 <div class="container">
-	<div class="outer_button" class:button_rounded={!isRecording} />
-	<div class="button" class:button_rounded={!isRecording} />
+	<div class="outer_button button_rounded"/>
+	<div class="button button_rounded" />
 </div>
 
 <style>

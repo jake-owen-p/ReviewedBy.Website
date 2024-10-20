@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import RecordingButtons from '$lib/RecordingButtons.svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import StartRecording from '$lib/RecordingButtons.svelte';
 	import RecordingComplete from '$lib/RecordingComplete.svelte';
+	import StopRecording from '$lib/StopRecording.svelte';
 
 	let mediaRecorder: MediaRecorder;
 	let recordedChunks: Blob[] = [];
-	let stream: MediaStream = null;
-	let videoUrl: string;
+	let stream: MediaStream | null = null;
+	let videoUrl: string = '';
 	let recording: boolean = false;
 
 	let videoElement: HTMLVideoElement; // Reference to the video element
@@ -14,14 +15,19 @@
 	let devices: MediaDeviceInfo[] = [];
 	let audioDevices: MediaDeviceInfo[] = [];
 	let videoDevices: MediaDeviceInfo[] = [];
-	let selectedAudioDeviceId: string;
-	let selectedVideoDeviceId: string;
+	let selectedAudioDeviceId: string = '';
+	let selectedVideoDeviceId: string = '';
 	let audioDeviceLabel: string = '';
 	let videoDeviceLabel: string = '';
-	let isPlaying = false;
+	let isPlaying: boolean = false;
 
-	let options = {}; // Initialize options at the top to access in other functions
-	let mimeType = ''; // Store the actual MIME type used
+	let options: MediaRecorderOptions = {}; // Initialize options at the top to access in other functions
+	let mimeType: string = ''; // Store the actual MIME type used
+
+	// Timer variables
+	let timer: number = 0;
+	let timerInterval: number | undefined;
+	let elapsedFormattedTime: string = "0:00";
 
 	// Function to detect iOS devices
 	function isIOS() {
@@ -57,6 +63,16 @@
 		}
 	});
 
+	// Clean up on component destroy
+	onDestroy(() => {
+		if (stream) {
+			stream.getTracks().forEach((track) => track.stop());
+		}
+		if (timerInterval) {
+			clearInterval(timerInterval);
+		}
+	});
+
 	async function startPreview() {
 		if (stream) {
 			stream.getTracks().forEach((track) => track.stop());
@@ -76,14 +92,16 @@
 		}
 	}
 
-	function handleAudioDeviceChange(event) {
-		selectedAudioDeviceId = event.target.value;
+	function handleAudioDeviceChange(event: Event) {
+		const target = event.target as HTMLSelectElement;
+		selectedAudioDeviceId = target.value;
 		audioDeviceLabel = audioDevices.find((d) => d.deviceId === selectedAudioDeviceId)?.label || '';
 		startPreview();
 	}
 
-	function handleVideoDeviceChange(event) {
-		selectedVideoDeviceId = event.target.value;
+	function handleVideoDeviceChange(event: Event) {
+		const target = event.target as HTMLSelectElement;
+		selectedVideoDeviceId = target.value;
 		videoDeviceLabel = videoDevices.find((d) => d.deviceId === selectedVideoDeviceId)?.label || '';
 		startPreview();
 	}
@@ -103,15 +121,7 @@
 			}
 		}
 
-		videoElement.srcObject = stream;
-		videoElement.src = null;
-		videoElement.muted = true; // Mute during recording
-		videoElement.play();
-
 		// Initialize MediaRecorder with correct MIME type
-		options = null;
-		mimeType = '';
-
 		if (MediaRecorder.isTypeSupported('video/mp4;codecs="avc1.42E01E, mp4a.40.2"')) {
 			options = { mimeType: 'video/mp4;codecs="avc1.42E01E, mp4a.40.2"' };
 			mimeType = 'video/mp4';
@@ -140,9 +150,12 @@
 		mediaRecorder.onstop = handleStop;
 		mediaRecorder.start(); // Start recording
 		recording = true;
+
+		// Start the independent timer
+		startTimer();
 	}
 
-	function handleDataAvailable(event: any) {
+	function handleDataAvailable(event: BlobEvent) {
 		if (event.data && event.data.size > 0) {
 			recordedChunks.push(event.data);
 		}
@@ -151,16 +164,32 @@
 	function handleStop() {
 		const blob = new Blob(recordedChunks, { type: mimeType || 'video/webm' });
 		videoUrl = URL.createObjectURL(blob);
+		// Stop the webcam stream
+		if (stream) {
+			stream.getTracks().forEach((track) => track.stop());
+			stream = null;
+		}
+		// Switch video element to the recorded video
+		videoElement.srcObject = null;
+		videoElement.src = videoUrl;
+		videoElement.currentTime = 0; // Ensure it starts at the beginning
+		videoElement.pause();
+		videoElement.muted = false; // Unmute during playback
+
+		// Reset the timer
+		resetTimer();
 	}
 
 	function stopRecording() {
-		mediaRecorder.stop();
-		console.log('Audio Tracks:', stream.getAudioTracks());
-		recording = false;
+		if (mediaRecorder && recording) {
+			mediaRecorder.stop();
+			recording = false;
+			// Timer will be reset in handleStop
+		}
 	}
 
 	function playRecording() {
-		// Stop the webcam stream
+		// Stop the webcam stream if it's still active
 		if (stream) {
 			stream.getTracks().forEach((track) => track.stop());
 			stream = null;
@@ -172,15 +201,50 @@
 		isPlaying = true;
 	}
 
-	$: videoElement && videoElement.addEventListener('play', () => {
-		if (videoElement.srcObject === null) {
-			isPlaying = true;
-		}
-	});
+	// Timer Functions
+	function startTimer() {
+		timer = 0;
+		elapsedFormattedTime = "0:00";
+		timerInterval = window.setInterval(() => {
+			timer += 1;
+		}, 1000);
+	}
 
-	$: videoElement && videoElement.addEventListener('pause', () => {
-		isPlaying = false;
-	});
+	function resetTimer() {
+		if (timerInterval) {
+			clearInterval(timerInterval);
+			timerInterval = undefined;
+		}
+		timer = 0;
+		elapsedFormattedTime = "0:00";
+	}
+
+	// Format the elapsed time whenever 'timer' changes
+	$: {
+		const minutes = Math.floor(timer / 60);
+		const seconds = timer % 60;
+		elapsedFormattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+	}
+
+	// Optional: Handle video playback events
+	$: if (videoElement) {
+		const onPlay = () => {
+			if (videoElement.srcObject === null) {
+				isPlaying = true;
+			}
+		};
+		const onPause = () => {
+			isPlaying = false;
+		};
+		videoElement.addEventListener('play', onPlay);
+		videoElement.addEventListener('pause', onPause);
+
+		// Cleanup event listeners when videoElement changes
+		onDestroy(() => {
+			videoElement.removeEventListener('play', onPlay);
+			videoElement.removeEventListener('pause', onPause);
+		});
+	}
 
 	async function requestPermissions() {
 		try {
@@ -199,8 +263,22 @@
 			// Handle errors as needed
 		}
 	}
-</script>
 
+	const startOver = () => {
+		mediaRecorder = undefined;
+		// Reset the video element to initial state if needed
+		if (!recording) {
+			videoUrl = '';
+			videoElement.srcObject = null;
+			videoElement.src = '';
+			videoElement.load();
+			// Restart the live preview
+			startPreview();
+		}
+		// Ensure the timer is reset
+		resetTimer();
+	}
+</script>
 <main class="container">
 	<div class="header">
 		<div class="logo_container">
@@ -213,6 +291,7 @@
 		<div class="question">
 			<p>What is your favourite feature from any programming language?</p>
 			<p>You have 2 minutes</p>
+
 		</div>
 
 		<!-- Single video element for preview and playback -->
@@ -227,16 +306,22 @@
 				controls={!stream}
 				muted
 			></video>
-			<div class="video_modal">
-				{#if !isPlaying}
-					{#if (recording || !mediaRecorder)}
-						<RecordingButtons onPress={recording ? stopRecording : startRecording} isRecording={recording} />
-					{:else}
+			{#if recording}
+				<div class="video_modal video_modal_stop">
+					<StopRecording onClick={stopRecording} elapsedTime={elapsedFormattedTime} />
+				</div>
+			{/if}
+			{#if !isPlaying && !mediaRecorder}
+			<div class="video_modal video_modal_complete">
+				<StartRecording onPress={startRecording} />
+			</div>
+			{/if}
+			<div class="video_modal video_modal_complete">
+				{#if !isPlaying && !recording && mediaRecorder}
 						<RecordingComplete
 							playRecording={playRecording}
-							startRecording={() => { mediaRecorder = undefined }}
+							startRecording={startOver}
 						/>
-					{/if}
 				{/if}
 			</div>
 		</div>
@@ -244,6 +329,21 @@
 </main>
 
 <style>
+    .video_modal_stop {
+        bottom: 0;
+    }
+    .video_modal_complete {
+        top: 50%;
+        min-width: 280px;
+    }
+    .video_modal {
+        transform: translate(-50%, -50%); /* This centers the modal */
+        left: 50%;
+        background-color: white;
+        position: absolute;
+        z-index: 10;
+				border-radius: 12px;
+    }
     .video_container {
         position: relative;
         width:90%;
@@ -251,16 +351,6 @@
         margin-left: 5%;
         border-radius: 20px;
         object-fit: cover;
-    }
-    .video_modal {
-        background-color: white;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-				min-width: 280px;
-        transform: translate(-50%, -50%); /* This centers the modal */
-        z-index: 10; /* Ensures it's above other elements */
-				border-radius: 12px;
     }
 		.question p {
         font-weight: bold;

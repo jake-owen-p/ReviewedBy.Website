@@ -1,13 +1,25 @@
 <script>
 	export let startRecording;
 	export let playRecording;
+	export let onSave;
+	export let savingVideoState;
+
+	$: console.log(savingVideoState)
 </script>
 
 <div class="container">
 	<div class="text_container">
 		<p class="text">Recording Complete</p>
-		<p class="subtext">Thank you for completing the interview, one of our experts will provide feedback via email within 24 hours </p>
-		<button class="button">Submit for Review</button>
+		{#if savingVideoState === 'saved'}
+			<p class="subtext">Thank you for completing the interview, one of our experts will provide feedback via email within 24 hours </p>
+		{:else}
+			<p class="subtext">Please submit your interview to be reviewed, or you can start again if you want to give it another go!</p>
+			{#if savingVideoState === 'saving'}
+				<img alt="spinner" src="/spinner.svg" />
+			{:else}
+				<button class="button" on:click={onSave}>Submit for Review</button>
+			{/if}
+	  {/if}
 	</div>
 	<div class="buttons">
 		<div class="h_seperator" />
@@ -28,7 +40,7 @@
 <style>
 		.text_container {
 				text-align: center;
-				padding: 10px 20px 25px 20px;
+				padding: 10px 20px 15px 20px;
 		}
 		.container {
         padding: 10px 0 0 0;

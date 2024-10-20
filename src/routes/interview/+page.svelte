@@ -9,6 +9,7 @@
 	let stream: MediaStream | null = null;
 	let videoUrl: string = '';
 	let recording: boolean = false;
+	let savingVideoState = 'not-started';
 
 	let videoElement: HTMLVideoElement; // Reference to the video element
 
@@ -107,6 +108,7 @@
 	}
 
 	async function startRecording() {
+		savingVideoState = 'not-started'
 		recordedChunks = []; // Clear recorded chunks before starting new recording
 
 		if (!stream) {
@@ -161,8 +163,10 @@
 		}
 	}
 
+	let blob: any;
+
 	function handleStop() {
-		const blob = new Blob(recordedChunks, { type: mimeType || 'video/webm' });
+		blob = new Blob(recordedChunks, { type: mimeType || 'video/webm' });
 		videoUrl = URL.createObjectURL(blob);
 		// Stop the webcam stream
 		if (stream) {
@@ -201,6 +205,7 @@
 		isPlaying = true;
 	}
 
+
 	// Timer Functions
 	function startTimer() {
 		timer = 0;
@@ -224,6 +229,9 @@
 		const minutes = Math.floor(timer / 60);
 		const seconds = timer % 60;
 		elapsedFormattedTime = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+		if (timer > 120) {
+			stopRecording();
+		}
 	}
 
 	// Optional: Handle video playback events
@@ -277,13 +285,39 @@
 		}
 		// Ensure the timer is reset
 		resetTimer();
+
 	}
+
+
+	const saveVideo = async () => {
+		savingVideoState = 'saving';
+		try {
+			const response = await fetch('http://localhost:8080/interview', {
+				method: 'POST',
+			});
+			const data = await response.json();
+			const presignedUrl = data.url;
+
+			// Step 2: Upload the blob to S3 using the pre-signed URL
+			await fetch(presignedUrl, {
+				method: 'PUT',
+				body: blob,
+				headers: {
+					'Content-Type': mimeType || 'video/webm',
+				},
+			});
+			savingVideoState = 'saved';
+		} catch {
+			savingVideoState = 'error';
+		}
+	}
+
 </script>
 <main class="container">
 	<div class="header">
 		<div class="logo_container">
 			<img class="logo" src="/logo.svg" alt="img" />
-			<p class="text title">ReviewedBy</p>
+			<p class="text title" on:click={saveVideo}>ReviewedBy</p>
 		</div>
 		<h1 class="text hero_title">Submit Your 2 Minute Interview for Feedback</h1>
 	</div>
@@ -319,6 +353,8 @@
 			<div class="video_modal video_modal_complete">
 				{#if !isPlaying && !recording && mediaRecorder}
 						<RecordingComplete
+							onSave={saveVideo}
+							savingVideoState={savingVideoState}
 							playRecording={playRecording}
 							startRecording={startOver}
 						/>

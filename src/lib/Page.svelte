@@ -20,8 +20,8 @@
         }
         isLoading = true;
         try {
-            await fetch("https://reviewedbyapi-production.up.railway.app", {
-                // await fetch("http://localhost:8080", {
+            // await fetch("https://reviewedbyapi-production.up.railway.app/email", {
+            await fetch("http://localhost:8080/email", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

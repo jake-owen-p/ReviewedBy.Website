@@ -17,7 +17,7 @@ export const engineerSetup = {
 }
 
 export const gradsSetup = {
-    title: "Professional Feedback to Help You Land Your Dream Role",
+    title: "Free Interview Feedback Designed to Land Your Dream Job",
     heroImage: "/startup.jpg",
     basePath: "grads",
     record: {

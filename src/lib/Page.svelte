@@ -128,6 +128,7 @@
         height: 40px;
         border-radius: 8px;
         padding: 0 10px;
+        font-size: 14px;
         border: 1px solid rgba(47, 72, 88, 0.3);
     }
     .input:focus {

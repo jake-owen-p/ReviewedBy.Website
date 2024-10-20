@@ -3,6 +3,7 @@ export async function handle({ event, resolve }) {
 
 	// Add the CSP header
 	response.headers.set('Content-Security-Policy', "script-src 'self' https://www.vercel-insights.com");
+	response.headers.set('Access-Control-Allow-Origin', '*');
 
 	return response;
 }

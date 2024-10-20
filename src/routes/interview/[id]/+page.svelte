@@ -5,6 +5,8 @@
 	import StopRecording from '$lib/StopRecording.svelte';
 	import { page } from '$app/stores';
 	import { Questions } from '$lib/questions.js';
+	import { inject } from '@vercel/analytics';
+	inject({ mode: 'production' });
 
 	let mediaRecorder: MediaRecorder;
 	let recordedChunks: Blob[] = [];

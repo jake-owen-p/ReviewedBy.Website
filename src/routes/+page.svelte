@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { inject } from '@vercel/analytics';
+	inject({ mode: 'production' });
+
 	import Page from "$lib/Page.svelte";
 	import { gradsSetup } from '$lib/constants';
 	import { onMount } from 'svelte';

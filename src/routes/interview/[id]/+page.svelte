@@ -6,6 +6,7 @@
 	import { page } from '$app/stores';
 	import { Questions } from '$lib/questions.js';
 	import { inject } from '@vercel/analytics';
+	import Footer from '$lib/Footer.svelte';
 	inject({ mode: 'production' });
 
 	let mediaRecorder: MediaRecorder;
@@ -295,50 +296,54 @@
 	const question = Questions[$page.url.searchParams.get('question') || "general"] || Questions["general"];
 </script>
 <main class="container">
-	<div class="header">
-		<div class="logo_container">
-			<img class="logo" src="/grads/logo.svg" alt="img" />
-			<p class="text title">ReviewedBy</p>
-		</div>
-		<h1 class="text hero_title">Submit Your 2 Minute Interview for Feedback</h1>
-	</div>
-	<div class="inner_container">
-		<div class="question">
-			<p>{question}</p>
-			<p>You have 2 minutes</p>
-		</div>
+	<div style="height: 100%;">
 
-		<div class="video_container">
-			<video
-				class="video"
-				bind:this={videoElement}
-				autoplay
-				playsinline
-				controls={!stream}
-				muted
-			></video>
-			{#if recording}
-				<div class="video_modal video_modal_stop">
-					<StopRecording onClick={stopRecording} elapsedTime={elapsedFormattedTime} />
-				</div>
-			{/if}
-			{#if !isPlaying && !mediaRecorder}
-			<div class="video_modal video_modal_complete">
-				<StartRecording onPress={startRecording} />
+		<div class="header">
+			<div class="logo_container">
+				<img class="logo" src="/grads/logo.svg" alt="img" />
+				<p class="text title">ReviewedBy</p>
 			</div>
-			{/if}
-			<div class="video_modal video_modal_complete">
-				{#if !isPlaying && !recording && mediaRecorder}
-						<RecordingComplete
-							onSave={saveVideo}
-							savingVideoState={savingVideoState}
-							playRecording={playRecording}
-							startRecording={startOver}
-						/>
+			<h1 class="text hero_title">Submit Your 2 Minute Interview for Feedback</h1>
+		</div>
+		<div class="inner_container">
+			<div class="question">
+				<p>{question}</p>
+				<p>You have 2 minutes</p>
+			</div>
+
+			<div class="video_container">
+				<video
+					class="video"
+					bind:this={videoElement}
+					autoplay
+					playsinline
+					controls={!stream}
+					muted
+				></video>
+				{#if recording}
+					<div class="video_modal video_modal_stop">
+						<StopRecording onClick={stopRecording} elapsedTime={elapsedFormattedTime} />
+					</div>
 				{/if}
+				{#if !isPlaying && !mediaRecorder}
+				<div class="video_modal video_modal_complete">
+					<StartRecording onPress={startRecording} />
+				</div>
+				{/if}
+				<div class="video_modal video_modal_complete">
+					{#if !isPlaying && !recording && mediaRecorder}
+							<RecordingComplete
+								onSave={saveVideo}
+								savingVideoState={savingVideoState}
+								playRecording={playRecording}
+								startRecording={startOver}
+							/>
+					{/if}
+				</div>
 			</div>
 		</div>
 	</div>
+	<Footer />
 </main>
 
 <style>
@@ -380,6 +385,7 @@
     }
 		.inner_container {
 				height: 65%;
+				margin-bottom: 20px;
 		}
 		.video {
 				width: 90%;
@@ -387,6 +393,7 @@
 				margin-left: 5%;
 				border-radius: 20px;
 				object-fit: cover;
+				min-height: 600px;
 		}
     .hero_title {
         padding-bottom: 15px;
@@ -400,8 +407,10 @@
     }
     .container {
 				height: 100vh;
-				padding-bottom: 30px;
 				background-color: var(--primary_2);
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
 		}
     .logo {
         height: 20px;

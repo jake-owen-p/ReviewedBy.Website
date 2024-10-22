@@ -1,6 +1,7 @@
 <script lang="ts">
     import Description from "./Description.svelte";
     import type { Config } from '$lib/types';
+    import Footer from '$lib/Footer.svelte';
 
     export let config: Config;
 
@@ -51,36 +52,38 @@
 <svelte:window bind:innerWidth />
 
 <main class="container" >
-    <div class="sidebar">
-        <div class="logo_container">
-            <img class="logo" src={config.basePath.includes('engineers') ? '/engineers/logo-light.svg' : '/grads/logo.svg'} alt="img" />
-            <p class="text title">ReviewedBy</p>
-        </div>
-        <div class="inner_container">
-            <div style="overflow: auto">
-                <h1 class="text big_title">{config.title}</h1>
-                <input bind:value={email} class="input" type="text" placeholder="enter email..." />
-                <div class="error">{error}</div>
-                <div class="text_container">
-                    {#if sent}
-                        <div>You will receive an email within 5 minutes</div>
-                    {:else if isLoading}
-                        <img class="spinner" src={`${config.basePath}/spinner.svg`} alt="spinner" />
-                    {:else }
-                        <button on:click={() => sendEmail(email)} class="button">Get My Review</button>
-                    {/if}
+    <div class="side_container">
+        <div class="sidebar">
+            <div class="logo_container">
+                <img class="logo" src={config.basePath.includes('engineers') ? '/engineers/logo-light.svg' : '/grads/logo.svg'} alt="img" />
+                <p class="text title">ReviewedBy</p>
+            </div>
+            <div class="inner_container">
+                <div style="overflow: auto">
+                    <h1 class="text big_title">{config.title}</h1>
+                    <input bind:value={email} class="input" type="text" placeholder="enter email..." />
+                    <div class="error">{error}</div>
+                    <div class="text_container">
+                        {#if sent}
+                            <div>You will receive an email within 5 minutes</div>
+                        {:else if isLoading}
+                            <img class="spinner" src={`${config.basePath}/spinner.svg`} alt="spinner" />
+                        {:else }
+                            <button on:click={() => sendEmail(email)} class="button">Get My Review</button>
+                        {/if}
+                    </div>
+                    <div class="line" />
+                    <Description title={config.record.title} tag={config.record.tag} icon={config.basePath + '/camera.svg'} />
+                    <Description title={config.feedback.title} tag={config.feedback.tag} icon={config.basePath + '/form.svg'} />
+                    <Description title={config.job.title} tag={config.job.tag} icon={config.basePath + '/heart.svg'} />
                 </div>
-                <div class="line" />
-                <Description title={config.record.title} tag={config.record.tag} icon={config.basePath + '/camera.svg'} />
-                <Description title={config.feedback.title} tag={config.feedback.tag} icon={config.basePath + '/form.svg'} />
-                <Description title={config.job.title} tag={config.job.tag} icon={config.basePath + '/heart.svg'} />
             </div>
         </div>
+        <div class="hero_image_container">
+            <img class="hero_image" src={config.heroImage} alt="coder">
+        </div>
     </div>
-    <div class="hero_image_container">
-        <img class="hero_image" src={config.heroImage} alt="coder">
-<!--        <img class="lines" src={config.basePath + '/lines.svg'} alt="lines" />-->
-    </div>
+    <Footer />
 </main>
 
 <style>
@@ -160,10 +163,11 @@
         margin-top: 30px;
     }
     .container {
-        width: 100vw;
-        height: 100vh;
-        display: flex;
         background-color: var(--bg-colour);
+    }
+    .side_container {
+        display: flex;
+        min-height: 100vh;
     }
     .sidebar {
         width: 34%;
@@ -175,7 +179,6 @@
 
     .hero_image_container {
         width: 66%;
-        height: 100%;
         position: relative;
     }
     .hero_image {

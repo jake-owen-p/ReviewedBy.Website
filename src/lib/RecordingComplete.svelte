@@ -23,7 +23,8 @@
 				</div>
 				<div style="display: flex; padding: 0 20px; align-items: flex-start; margin-top: 15px">
 					<input type="checkbox" bind:checked={checked} />
-					<p style="text-align: left; margin-left: 10px">I agree to the Terms of Use and Privacy Policy.</p>
+					<p style="text-align: left; margin-left: 10px">I agree to the <span class="link">
+						<a target="_blank" href="https://sites.google.com/view/reviewedby-terms/home">Terms of Use</a></span> and <span class="link"><a target="_blank" href="https://sites.google.com/view/reviewedby-privacy/home">Privacy Policy</a></span>.</p>
 				</div>
 				<p></p>
 				{#if savingVideoState === 'saving'}

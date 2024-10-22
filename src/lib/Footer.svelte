@@ -1,6 +1,3 @@
-<script>
-</script>
-
 <div class="container">
 	<div class="company_container">
 		<div class="logo_container">
@@ -11,16 +8,15 @@
 			<img src="/mail.svg" class="icon_image" alt="mail" />
 			<p class="text sub">support@reviewedby.app</p>
 		</div>
-		<div class="socials">
-			<img src="/linkedin.svg" class="social_image" alt="mail" />
-			<img src="/instagram.svg" class="social_image" alt="mail" />
-			<img src="/x.svg" class="social_image" alt="mail" />
-		</div>
+<!--		<div class="socials">-->
+<!--			<img src="/linkedin.svg" class="social_image" alt="mail" />-->
+<!--			<img src="/instagram.svg" class="social_image" alt="mail" />-->
+<!--			<img src="/x.svg" class="social_image" alt="mail" />-->
+<!--		</div>-->
 	</div>
 	<div class="links_container">
-		<a href="/" class="link">Privacy Policy</a>
-		<a href="/" class="link">Terms of Use</a>
-		<a href="/" class="link">Contact Us</a>
+		<a target="_blank" href="https://sites.google.com/view/reviewedby-privacy/home" class="link">Privacy Policy</a>
+		<a target="_blank" href="https://sites.google.com/view/reviewedby-terms/home" class="link">Terms of Use</a>
 	</div>
 </div>
 

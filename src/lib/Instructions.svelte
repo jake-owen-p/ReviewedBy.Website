@@ -15,7 +15,7 @@
 		</div>
 		<div class="step_container">
 			<p class="subtitle"><span class="subtitle_bold">Step 3: Submit for Feedback</span></p>
-			<p class="subtext">Read the question at the top and take a moment to plan your answer. Think through your response as if you're in a real interview.</p>
+			<p class="subtext">Once you're happy, submit your recording. You’ll get feedback within 24 hours to help you improve.</p>
 		</div>
 	</div>
 	<button class="button" on:click={onContinue}>Continue</button>

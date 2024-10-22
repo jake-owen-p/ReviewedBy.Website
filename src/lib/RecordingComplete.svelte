@@ -59,7 +59,7 @@
 		}
     .email_input {
 				margin-top: 10px;
-        width: 100%;
+        width: 94%;
         height: 30px;
         border-radius: 8px;
         padding: 0 10px;
@@ -71,7 +71,7 @@
     }
 		.text_container {
 				text-align: center;
-				padding: 10px 20px 15px 20px;
+				padding: 10px 5px 15px 5px;
 		}
 		.container {
         padding: 10px 0 0 0;

@@ -129,6 +129,6 @@
 				border-radius: 10px;
 				font-size: 16px;
 				cursor: pointer;
-				margin-top: 10px;
+				margin-top: 20px;
     }
 </style>

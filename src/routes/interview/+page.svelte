@@ -18,7 +18,6 @@
 	let savingVideoState = 'not-started';
 
 	let videoElement: HTMLVideoElement; // Reference to the video element
-
 	let devices: MediaDeviceInfo[] = [];
 	let audioDevices: MediaDeviceInfo[] = [];
 	let videoDevices: MediaDeviceInfo[] = [];
@@ -34,32 +33,6 @@
 	let timer: number = 0;
 	let timerInterval: number | undefined;
 	let elapsedFormattedTime: string = "0:00";
-
-	onMount(async () => {
-		// try {
-		// 	// Request permissions
-		// 	await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-		//
-		// 	// Get the list of devices
-		// 	devices = await navigator.mediaDevices.enumerateDevices();
-		// 	audioDevices = devices.filter((device) => device.kind === 'audioinput');
-		// 	videoDevices = devices.filter((device) => device.kind === 'videoinput');
-		//
-		// 	// Set default devices
-		// 	if (audioDevices.length > 0) {
-		// 		selectedAudioDeviceId = audioDevices[0].deviceId;
-		// 	}
-		//
-		// 	if (videoDevices.length > 0) {
-		// 		selectedVideoDeviceId = videoDevices[0].deviceId;
-		// 	}
-		//
-		// 	// Start the live preview
-		// 	await startPreview();
-		// } catch (err) {
-		// 	console.error('Error accessing media devices.', err);
-		// }
-	});
 
 	const onContinue = async () => {
 		showInstructions = false;
@@ -286,6 +259,12 @@
 			// Step 1: Get the pre-signed URL from your API
 			const response = await fetch('https://reviewedbyapi-production.up.railway.app/interview', {
 				method: 'POST',
+				body: JSON.stringify({
+					email: emails
+				}),
+				headers: {
+					"Content-Type": "application/json"
+				},
 			})
 			const data = await response.json();
 			const presignedUrl = data.url;
@@ -294,7 +273,7 @@
 				method: 'PUT',
 				body: blob,
 				headers: {
-					'Content-Type': mimeType || 'video/webm',
+					'Content-Type': mimeType || 'video/webm'
 				},
 			});
 
@@ -322,7 +301,7 @@
 	const question = Questions[$page.url.searchParams.get('question') || "general"] || Questions["general"];
 </script>
 <main class="container">
-	<div style="height: 100%; display: flex; flex-direction: column;">
+	<div style="height: 100%; display: flex; flex-direction: column; justify-content: center">
 
 		<div class="header">
 			<div class="logo_container">
@@ -332,7 +311,7 @@
 			<h1 class="text hero_title">Submit Your 2 Minute Interview for Feedback</h1>
 		</div>
 		{#if showInstructions}
-			<div style="background-color: white; max-width: 500px; align-self: center; margin: 70px 20px 30px 20px;">
+			<div style="background-color: white; max-width: 500px; align-self: center; margin: 40px 20px 30px 20px;">
 				<Instructions onContinue={onContinue} />
 			</div>
 		{:else}
@@ -399,9 +378,8 @@
 				align-items: center;
 				justify-content: center;
         position: relative;
-        width:90%;
+        width:100%;
         height: 100%;
-        margin-left: 5%;
         border-radius: 20px;
         object-fit: cover;
 				color: var(--primary);
@@ -426,7 +404,6 @@
 		.video {
 				width: 90%;
 				height: 100%;
-				margin-left: 5%;
 				border-radius: 20px;
 				object-fit: cover;
 				min-height: 600px;

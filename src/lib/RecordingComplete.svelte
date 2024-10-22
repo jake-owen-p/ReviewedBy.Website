@@ -107,7 +107,7 @@
         flex-direction: column;
     }
     .text {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: bold;
     }
     .subtext {
@@ -115,7 +115,7 @@
         background-color: #eff6ff;
 				border-radius: 10px;
 				padding: 10px;
-        margin: 10px 20px;
+        margin: 20px 10px 10px 10px;
     }
 		.disabled {
         background-color: #717171 !important;

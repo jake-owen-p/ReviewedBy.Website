@@ -7,6 +7,7 @@
 	import { Questions } from '$lib/questions.js';
 	import { inject } from '@vercel/analytics';
 	import Footer from '$lib/Footer.svelte';
+	import Instructions from '$lib/Instructions.svelte';
 	inject({ mode: 'production' });
 
 	let mediaRecorder: MediaRecorder;
@@ -24,6 +25,7 @@
 	let selectedAudioDeviceId: string = '';
 	let selectedVideoDeviceId: string = '';
 	let isPlaying: boolean = false;
+	let showInstructions: boolean = true;
 
 	let options: MediaRecorderOptions = {}; // Initialize options at the top to access in other functions
 	let mimeType: string = ''; // Store the actual MIME type used
@@ -34,6 +36,33 @@
 	let elapsedFormattedTime: string = "0:00";
 
 	onMount(async () => {
+		// try {
+		// 	// Request permissions
+		// 	await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+		//
+		// 	// Get the list of devices
+		// 	devices = await navigator.mediaDevices.enumerateDevices();
+		// 	audioDevices = devices.filter((device) => device.kind === 'audioinput');
+		// 	videoDevices = devices.filter((device) => device.kind === 'videoinput');
+		//
+		// 	// Set default devices
+		// 	if (audioDevices.length > 0) {
+		// 		selectedAudioDeviceId = audioDevices[0].deviceId;
+		// 	}
+		//
+		// 	if (videoDevices.length > 0) {
+		// 		selectedVideoDeviceId = videoDevices[0].deviceId;
+		// 	}
+		//
+		// 	// Start the live preview
+		// 	await startPreview();
+		// } catch (err) {
+		// 	console.error('Error accessing media devices.', err);
+		// }
+	});
+
+	const onContinue = async () => {
+		showInstructions = false;
 		try {
 			// Request permissions
 			await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -57,7 +86,7 @@
 		} catch (err) {
 			console.error('Error accessing media devices.', err);
 		}
-	});
+	}
 
 	// Clean up on component destroy
 	onDestroy(() => {
@@ -293,7 +322,7 @@
 	const question = Questions[$page.url.searchParams.get('question') || "general"] || Questions["general"];
 </script>
 <main class="container">
-	<div style="height: 100%;">
+	<div style="height: 100%; display: flex; flex-direction: column;">
 
 		<div class="header">
 			<div class="logo_container">
@@ -302,6 +331,11 @@
 			</div>
 			<h1 class="text hero_title">Submit Your 2 Minute Interview for Feedback</h1>
 		</div>
+		{#if showInstructions}
+			<div style="background-color: white; max-width: 500px; align-self: center; margin: 70px 20px 30px 20px;">
+				<Instructions onContinue={onContinue} />
+			</div>
+		{:else}
 		<div class="inner_container">
 			<div class="question">
 				<p>{question}</p>
@@ -309,36 +343,37 @@
 			</div>
 
 			<div class="video_container">
-				<video
-					class="video"
-					bind:this={videoElement}
-					autoplay
-					playsinline
-					controls={!stream}
-					muted
-				></video>
-				{#if recording}
-					<div class="video_modal video_modal_stop">
-						<StopRecording onClick={stopRecording} elapsedTime={elapsedFormattedTime} />
-					</div>
-				{/if}
-				{#if !isPlaying && !mediaRecorder}
-				<div class="video_modal video_modal_complete">
-					<StartRecording onPress={startRecording} />
-				</div>
-				{/if}
-				<div class="video_modal video_modal_complete">
-					{#if !isPlaying && !recording && mediaRecorder}
+					<video
+						class="video"
+						bind:this={videoElement}
+						autoplay
+						playsinline
+						controls={!stream}
+						muted
+					></video>
+					{#if recording}
+						<div class="video_modal video_modal_stop">
+							<StopRecording onClick={stopRecording} elapsedTime={elapsedFormattedTime} />
+						</div>
+					{/if}
+					{#if !isPlaying && !mediaRecorder}
+						<div class="video_modal video_modal_complete">
+							<StartRecording onPress={startRecording} />
+						</div>
+					{/if}
+					<div class="video_modal video_modal_complete">
+						{#if !isPlaying && !recording && mediaRecorder}
 							<RecordingComplete
 								onSave={saveVideo}
 								savingVideoState={savingVideoState}
 								playRecording={playRecording}
 								startRecording={startOver}
 							/>
-					{/if}
-				</div>
+						{/if}
+					</div>
 			</div>
 		</div>
+		{/if}
 	</div>
 	<Footer />
 </main>
@@ -360,6 +395,9 @@
 				border-radius: 12px;
     }
     .video_container {
+				display: flex;
+				align-items: center;
+				justify-content: center;
         position: relative;
         width:90%;
         height: 100%;
@@ -373,7 +411,7 @@
 				text-align: center;
 		}
     .question {
-				padding: 0 10px 20px 10px;
+				padding: 0 10px 30px 10px;
 				font-size: 18px;
 				display: flex;
 				flex-direction: column;
@@ -382,7 +420,8 @@
     }
 		.inner_container {
 				height: 65%;
-				margin-bottom: 20px;
+				margin-bottom: 30px;
+				margin-top: 30px;
 		}
 		.video {
 				width: 90%;
@@ -391,6 +430,9 @@
 				border-radius: 20px;
 				object-fit: cover;
 				min-height: 600px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
 		}
     .hero_title {
         padding-bottom: 15px;
@@ -403,7 +445,7 @@
         text-align: center;
     }
     .container {
-				height: 100vh;
+				min-height: 100vh;
 				background-color: var(--primary_2);
 				display: flex;
 				flex-direction: column;

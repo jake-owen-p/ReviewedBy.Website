@@ -7,6 +7,7 @@
 	import { Questions } from '$lib/questions.js';
 	import { inject } from '@vercel/analytics';
 	import Footer from '$lib/Footer.svelte';
+	import Instructions from '$lib/Instructions.svelte';
 	inject({ mode: 'production' });
 
 	let mediaRecorder: MediaRecorder;
@@ -17,13 +18,13 @@
 	let savingVideoState = 'not-started';
 
 	let videoElement: HTMLVideoElement; // Reference to the video element
-
 	let devices: MediaDeviceInfo[] = [];
 	let audioDevices: MediaDeviceInfo[] = [];
 	let videoDevices: MediaDeviceInfo[] = [];
 	let selectedAudioDeviceId: string = '';
 	let selectedVideoDeviceId: string = '';
 	let isPlaying: boolean = false;
+	let showInstructions: boolean = true;
 
 	let options: MediaRecorderOptions = {}; // Initialize options at the top to access in other functions
 	let mimeType: string = ''; // Store the actual MIME type used
@@ -33,7 +34,8 @@
 	let timerInterval: number | undefined;
 	let elapsedFormattedTime: string = "0:00";
 
-	onMount(async () => {
+	const onContinue = async () => {
+		showInstructions = false;
 		try {
 			// Request permissions
 			await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -57,7 +59,7 @@
 		} catch (err) {
 			console.error('Error accessing media devices.', err);
 		}
-	});
+	}
 
 	// Clean up on component destroy
 	onDestroy(() => {
@@ -257,6 +259,12 @@
 			// Step 1: Get the pre-signed URL from your API
 			const response = await fetch('https://reviewedbyapi-production.up.railway.app/interview', {
 				method: 'POST',
+				body: JSON.stringify({
+					email: emails
+				}),
+				headers: {
+					"Content-Type": "application/json"
+				},
 			})
 			const data = await response.json();
 			const presignedUrl = data.url;
@@ -265,7 +273,7 @@
 				method: 'PUT',
 				body: blob,
 				headers: {
-					'Content-Type': mimeType || 'video/webm',
+					'Content-Type': mimeType || 'video/webm'
 				},
 			});
 
@@ -293,7 +301,7 @@
 	const question = Questions[$page.url.searchParams.get('question') || "general"] || Questions["general"];
 </script>
 <main class="container">
-	<div style="height: 100%;">
+	<div style="height: 100%; display: flex; flex-direction: column; justify-content: center">
 
 		<div class="header">
 			<div class="logo_container">
@@ -302,43 +310,49 @@
 			</div>
 			<h1 class="text hero_title">Submit Your 2 Minute Interview for Feedback</h1>
 		</div>
-		<div class="inner_container">
-			<div class="question">
-				<p>{question}</p>
-				<p>You have 2 minutes</p>
+		{#if showInstructions}
+			<div style="background-color: white; max-width: 500px; align-self: center; margin: 40px 20px 30px 20px;">
+				<Instructions onContinue={onContinue} />
 			</div>
-
-			<div class="video_container">
-				<video
-					class="video"
-					bind:this={videoElement}
-					autoplay
-					playsinline
-					controls={!stream}
-					muted
-				></video>
-				{#if recording}
-					<div class="video_modal video_modal_stop">
-						<StopRecording onClick={stopRecording} elapsedTime={elapsedFormattedTime} />
-					</div>
-				{/if}
-				{#if !isPlaying && !mediaRecorder}
-				<div class="video_modal video_modal_complete">
-					<StartRecording onPress={startRecording} />
+		{:else}
+			<div class="inner_container">
+				<div class="question">
+					<p>{question}</p>
+					<p>You have 2 minutes</p>
 				</div>
-				{/if}
-				<div class="video_modal video_modal_complete">
-					{#if !isPlaying && !recording && mediaRecorder}
+
+				<div class="video_container">
+					<video
+						class="video"
+						bind:this={videoElement}
+						autoplay
+						playsinline
+						controls={!stream}
+						muted
+					></video>
+					{#if recording}
+						<div class="video_modal video_modal_stop">
+							<StopRecording onClick={stopRecording} elapsedTime={elapsedFormattedTime} />
+						</div>
+					{/if}
+					{#if !isPlaying && !mediaRecorder}
+						<div class="video_modal video_modal_complete">
+							<StartRecording onPress={startRecording} />
+						</div>
+					{/if}
+					<div class="video_modal video_modal_complete">
+						{#if !isPlaying && !recording && mediaRecorder}
 							<RecordingComplete
 								onSave={saveVideo}
 								savingVideoState={savingVideoState}
 								playRecording={playRecording}
 								startRecording={startOver}
 							/>
-					{/if}
+						{/if}
+					</div>
 				</div>
 			</div>
-		</div>
+		{/if}
 	</div>
 	<Footer />
 </main>
@@ -357,41 +371,46 @@
         background-color: white;
         position: absolute;
         z-index: 10;
-				border-radius: 12px;
+        border-radius: 12px;
     }
     .video_container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         position: relative;
-        width:90%;
+        width:100%;
         height: 100%;
-        margin-left: 5%;
         border-radius: 20px;
         object-fit: cover;
-				color: var(--primary);
+        color: var(--primary);
     }
-		.question p {
+    .question p {
         font-weight: bold;
-				text-align: center;
-		}
-    .question {
-				padding: 0 10px 20px 10px;
-				font-size: 18px;
-				display: flex;
-				flex-direction: column;
-				color: var(--secondary_2);
-				gap: 10px;
+        text-align: center;
     }
-		.inner_container {
-				height: 65%;
-				margin-bottom: 20px;
-		}
-		.video {
-				width: 90%;
-				height: 100%;
-				margin-left: 5%;
-				border-radius: 20px;
-				object-fit: cover;
-				min-height: 600px;
-		}
+    .question {
+        padding: 0 10px 30px 10px;
+        font-size: 18px;
+        display: flex;
+        flex-direction: column;
+        color: var(--secondary_2);
+        gap: 10px;
+    }
+    .inner_container {
+        height: 65%;
+        margin-bottom: 30px;
+        margin-top: 30px;
+    }
+    .video {
+        width: 90%;
+        height: 100%;
+        border-radius: 20px;
+        object-fit: cover;
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
     .hero_title {
         padding-bottom: 15px;
         font-size: 32px;
@@ -403,12 +422,12 @@
         text-align: center;
     }
     .container {
-				height: 100vh;
-				background-color: var(--primary_2);
-				display: flex;
-				flex-direction: column;
-				justify-content: space-between;
-		}
+        min-height: 100vh;
+        background-color: var(--primary_2);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
     .logo {
         height: 20px;
         width: 20px;
